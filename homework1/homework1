@@ -1,0 +1,49 @@
+Q1: docker build --help
+
+--cache-from strings Images to consider as cache sources
+--file string Name of the Dockerfile (Default is 'PATH/Dockerfile')
+--iidfile string Write the image ID to the file
+--isolation string Container isolation technology
+--network string Set the networking mode for the RUN instructions during build (default "default")
+--platform string Set platform if server is multi-platform capable
+--progress string Set type of progress output (auto, plain, tty). Use plain to show container output (default "auto")
+--target string Set the target build stage to build.
+
+Q2: docker run -it python:3.9 /bin/bash
+pip list
+
+pip 22.0.4
+setuptools 58.1.0
+wheel 0.38.4
+
+3
+
+Q3:
+SELECT index, "VendorID", lpep_pickup_datetime, lpep_dropoff_datetime, store_and_fwd_flag, "RatecodeID", "PULocationID", "DOLocationID", passenger_count, trip_distance, fare_amount, extra, mta_tax, tip_amount, tolls_amount, ehail_fee, improvement_surcharge, total_amount, payment_type, trip_type, congestion_surcharge
+	FROM public.yellow_taxi_data 
+	where lpep_pickup_datetime >= '2019-01-15 00:00:00' and lpep_dropoff_datetime <= '2019-01-15 23:59:59'
+
+20530
+
+Q4: 
+select trip_distance, lpep_pickup_datetime::TIMESTAMP::DATE	FROM public.yellow_taxi_data 
+order by trip_distance desc
+
+2019-01-15
+
+Q5:
+select count(index) FROM public.yellow_taxi_data 
+where lpep_pickup_datetime::TIMESTAMP::DATE = '2019-01-01' and passenger_count = 2
+
+2: 1282 ; 3: 254
+
+Q6:
+select y."DOLocationID", max(y."tip_amount") FROM public.yellow_taxi_data y inner join public.zones z on z."LocationID" = y."PULocationID"
+where z."Zone"= 'Astoria'
+group by y."DOLocationID"
+order by max(y."tip_amount") DESC
+
+
+select * from public.zones where "LocationID" = 146
+
+Long Island City/Queens Plaza
