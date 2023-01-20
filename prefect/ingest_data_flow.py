@@ -9,8 +9,11 @@ from time import time
 import pandas as pd
 from sqlalchemy import create_engine
 from prefect import flow, task
+from prefect.tasks import task_input_hash
+from datetime import timedelta
+from prefect_sqlalchemy import SqlAlchemyConnector
 
-@task(log_prints=True)
+@task(log_prints=True, tags=["extract"], cache_key_fn=task_input_hash, cache_expiration=timedelta(days=1))
 def extract_data(url: str):
     # the backup files are gzipped, and it's important to keep the correct extension
     # for pandas to be able to open the file
@@ -40,17 +43,18 @@ def transform_data(df):
 
 @task(log_prints=True, retries=3)
 def ingest_data(params, df):
-    user = params.user
-    password = params.password
-    host = params.host 
-    port = params.port 
-    db = params.db
+    #user = params.user
+    #password = params.password
+    #host = params.host 
+    #port = params.port 
+    #db = params.db
     table_name = params.table_name
  
-    engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{db}')
-
-    df.head(n=0).to_sql(name=table_name, con=engine, if_exists='replace')
-    df.to_sql(name=table_name, con=engine, if_exists='append')
+    #engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{db}')
+    connection_block = SqlAlchemyConnector.load("postgres-con")
+    with connection_block.get_connection(begin=False) as engine:
+        df.head(n=0).to_sql(name=table_name, con=engine, if_exists='replace')
+        df.to_sql(name=table_name, con=engine, if_exists='append')
 
     # while True: 
 
@@ -75,11 +79,11 @@ def ingest_data(params, df):
 @flow(name="ingest data")
 def main_flow():
     parser = argparse.ArgumentParser(description='Ingest CSV data to Postgres')
-    parser.add_argument('--user', required=True, help='user name for postgres')
-    parser.add_argument('--password', required=True, help='password for postgres')
-    parser.add_argument('--host', required=True, help='host for postgres')
-    parser.add_argument('--port', required=True, help='port for postgres')
-    parser.add_argument('--db', required=True, help='database name for postgres')
+    #parser.add_argument('--user', required=True, help='user name for postgres')
+    #parser.add_argument('--password', required=True, help='password for postgres')
+    #parser.add_argument('--host', required=True, help='host for postgres')
+    #parser.add_argument('--port', required=True, help='port for postgres')
+    #parser.add_argument('--db', required=True, help='database name for postgres')
     parser.add_argument('--table_name', required=True, help='name of the table where we will write the results to')
     parser.add_argument('--url', required=True, help='url of the csv file')
 

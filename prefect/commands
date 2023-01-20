@@ -8,4 +8,8 @@ python ingest_data_flow.py \
   --url="https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2021-01.csv.gz"
 
 
-  
+  prefect orion start
+
+  python ingest_data_flow.py \
+  --table_name=yellow_taxi_trips \
+  --url="https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2021-01.csv.gz"
