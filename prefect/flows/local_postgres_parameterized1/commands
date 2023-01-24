@@ -1,0 +1,11 @@
+
+  prefect orion start
+
+  prefect deployment build ./parameterized_flow.py:etl_parent_flow -n "Parameterized ETL" 
+  prefect deployment apply etl_parent_flow-deployment.yaml 
+  prefect agent start -q 'default'
+
+
+    prefect deployment build ./parameterized_flow.py:etl_parent_flow -n etl2 --cron "0 0 * * *" -a
+
+

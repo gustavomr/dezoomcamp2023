@@ -1,0 +1,4 @@
+docker image build -t gustavomr/prefect:zoom .
+
+docker login 
+docker image push gustavomr/prefect:zoom 
